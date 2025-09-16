@@ -1,4 +1,4 @@
-package javakanban.data;
+package kanban.data;
 
 public class Subtask extends Task {
     private Integer epicId;

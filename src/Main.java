@@ -1,8 +1,8 @@
-import javakanban.data.Epic;
-import javakanban.data.Subtask;
-import javakanban.data.Task;
-import javakanban.data.TaskStatus;
-import javakanban.manager.TaskManager;
+import kanban.data.Epic;
+import kanban.data.Subtask;
+import kanban.data.Task;
+import kanban.data.TaskStatus;
+import kanban.manager.TaskManager;
 
 public class Main {
     public static void main(String[] args) {

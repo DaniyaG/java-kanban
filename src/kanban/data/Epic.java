@@ -1,4 +1,4 @@
-package javakanban.data;
+package kanban.data;
 
 import java.util.ArrayList;
 

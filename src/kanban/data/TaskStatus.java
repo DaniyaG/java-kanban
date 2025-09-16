@@ -1,4 +1,4 @@
-package javakanban.data;
+package kanban.data;
 
 public enum TaskStatus {
     NEW,
