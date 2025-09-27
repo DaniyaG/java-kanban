@@ -1,22 +1,29 @@
 package kanban.data;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Epic extends Task {
-    private ArrayList<Integer> subtaskIds = new ArrayList<>();
+    private final List<Integer> subtaskIds = new ArrayList<>();
 
     public Epic(Integer id, String title, String description, TaskStatus status) {
         super(id, title, description, status);
     }
 
-    public ArrayList<Integer> getSubtaskIds() {
-        return subtaskIds;
+    public List<Integer> getSubtaskIds() {
+
+        return new ArrayList<>(subtaskIds);
     }
 
-    public void addSubtaskId(int subtaskId) {
-        subtaskIds.add(subtaskId);
+    public boolean addSubtaskId(int subtaskId) {
+        if (subtaskId == this.getId()) {
+            return false;
+        }
+        this.subtaskIds.add(subtaskId);
+        return true;
     }
     public void removeSubtaskId(int subtaskId) {
+
         subtaskIds.remove(Integer.valueOf(subtaskId));
     }
 

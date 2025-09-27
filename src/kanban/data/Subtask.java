@@ -8,13 +8,16 @@ public class Subtask extends Task {
         this.epicId = epicId;
     }
 
-    public int getEpicId() {
+    public Integer getEpicId() {
+
         return epicId;
     }
-    public void setEpicId(int epicId) {
+    public boolean updateEpicId(Integer epicId) {
+        if (epicId != null && this.id != null && this.id.equals(epicId)) {
+            return false;
+        }
         this.epicId = epicId;
+        return true;
     }
-
-
 
 }
