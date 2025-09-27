@@ -67,7 +67,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void testUpdateEpicStatusBasedOnSubtasks() {
+    public void testEpicStatusUpdateBySubtasks() {
         Epic epic = taskManager.createEpic(new Epic(null, "Epic", "Desc", TaskStatus.NEW));
         Subtask st1 = taskManager.createSubtask(new Subtask(null, "Sub1", "Desc", TaskStatus.NEW, epic.getId()));
         Subtask st2 = taskManager.createSubtask(new Subtask(null, "Sub2", "Desc", TaskStatus.NEW, epic.getId()));
@@ -112,8 +112,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void testHistoryManagerAddsAndLimitsSize() {
-        for (int i = 0; i < 15; i++) {
-            Task task = taskManager.createTask(new Task(null, "Task " + i, "Desc", TaskStatus.NEW));
+        for (int taskNumber = 0; taskNumber < 15; taskNumber++) {
+            Task task = taskManager.createTask(new Task(null, "Task " + taskNumber, "Desc", TaskStatus.NEW));
             taskManager.getTaskById(task.getId());
         }
 
