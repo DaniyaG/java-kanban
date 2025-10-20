@@ -202,6 +202,7 @@ public class InMemoryTaskManager implements TaskManager{
             }
         }
     }
+
     @Override
     public void deleteSubtaskById(int id) {
         if (idToSubtask.containsKey(id)) {
@@ -214,9 +215,9 @@ public class InMemoryTaskManager implements TaskManager{
         }
         historyManager.remove(id);
     }
+
     @Override
     public List<Task> getHistory() {
         return new ArrayList<>(historyManager.getHistory());
     }
-
 }
