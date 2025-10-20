@@ -16,11 +16,7 @@ public class InMemoryTaskManager implements TaskManager{
     private HashMap<Integer, Epic> idToEpic = new HashMap<>();
     private HashMap<Integer, Subtask> idToSubtask = new HashMap<>();
     private int counter = 1;
-    private final HistoryManager historyManager;
-
-    public InMemoryTaskManager() {
-        this.historyManager = Managers.getDefaultHistory();
-    }
+    private final HistoryManager historyManager = Managers.getDefaultHistory();;
 
     private int nextId() {
         return counter++;
@@ -56,16 +52,15 @@ public class InMemoryTaskManager implements TaskManager{
 
     @Override
     public void updateTask(Task task) {
-        Task oldTask = idToTask.get(task.getId());
-        if (oldTask != null) {
-            historyManager.add(oldTask);
+        if (idToTask.containsKey(task.getId())) {
+            idToTask.put(task.getId(), task);
         }
-        idToTask.put(task.getId(), task);
     }
 
     @Override
     public void deleteTaskById(int id) {
         idToTask.remove(id);
+        historyManager.remove(id);
     }
 
     @Override
@@ -97,12 +92,11 @@ public class InMemoryTaskManager implements TaskManager{
     }
     @Override
     public void updateEpic(Epic epic) {
-        Epic oldEpic = idToEpic.get(epic.getId());
-        if (oldEpic != null) {
-            historyManager.add(oldEpic);
+        if (idToEpic.containsKey(epic.getId())) {
+            updateEpicStatus(epic.getId());
+            idToEpic.put(epic.getId(), epic);
         }
-        updateEpicStatus(epic.getId());
-        idToEpic.put(epic.getId(), epic);
+
     }
 
     private void updateEpicStatus(int epicId) {
@@ -145,6 +139,7 @@ public class InMemoryTaskManager implements TaskManager{
             }
             idToEpic.remove(id);
         }
+        historyManager.remove(id);
     }
 
     @Override
@@ -199,14 +194,12 @@ public class InMemoryTaskManager implements TaskManager{
 
     @Override
     public void updateSubtask(Subtask subtask) {
-        Subtask oldSubtask = idToSubtask.get(subtask.getId());
-        if (oldSubtask != null) {
-            historyManager.add(oldSubtask);
-        }
-        int epicId = subtask.getEpicId();
-        idToSubtask.put(subtask.getId(), subtask);
-        if (idToEpic.containsKey(epicId)) {
-            updateEpicStatus(epicId);
+        if (idToSubtask.containsKey(subtask.getId())) {
+            idToSubtask.put(subtask.getId(), subtask);
+            int epicId = subtask.getEpicId();
+            if (idToEpic.containsKey(epicId)) {
+                updateEpicStatus(epicId);
+            }
         }
     }
     @Override
@@ -219,6 +212,7 @@ public class InMemoryTaskManager implements TaskManager{
                 updateEpicStatus(epicId);
             }
         }
+        historyManager.remove(id);
     }
     @Override
     public List<Task> getHistory() {

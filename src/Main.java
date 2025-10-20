@@ -3,61 +3,57 @@ import kanban.data.Subtask;
 import kanban.data.Task;
 import kanban.data.TaskStatus;
 import kanban.manager.InMemoryTaskManager;
+import kanban.manager.Managers;
+import kanban.manager.TaskManager;
 
 public class Main {
     public static void main(String[] args) {
-        InMemoryTaskManager manager = new InMemoryTaskManager();
+        TaskManager taskManager = Managers.getDefault();
 
         Task task1 = new Task(null, "Задача 1", "Описание задачи 1", TaskStatus.NEW);
         Task task2 = new Task(null, "Задача 2", "Описание задачи 2", TaskStatus.NEW);
-        manager.createTask(task1);
-        manager.createTask(task2);
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
 
-        Epic epic1 = new Epic(null, "Эпик 1", "Описание эпика 1", TaskStatus.NEW);
-        manager.createEpic(epic1);
+        Epic epic1 = new Epic(null, "Эпик 1", "Эпик с тремя подзадачами", TaskStatus.NEW);
+        taskManager.createEpic(epic1);
         Subtask subtask1 = new Subtask(null, "Подзадача 1 для эпика 1", "Описание подзадачи 1", TaskStatus.NEW, epic1.getId());
         Subtask subtask2 = new Subtask(null, "Подзадача 2 для эпика 1", "Описание подзадачи 2", TaskStatus.NEW, epic1.getId());
-        manager.createSubtask(subtask1);
-        manager.createSubtask(subtask2);
+        Subtask subtask3 = new Subtask(null, "Подзадача 3 для эпика 1", "Описание подзадачи 3", TaskStatus.NEW, epic1.getId());
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask3);
 
-        Epic epic2 = new Epic(null, "Эпик 2", "Описание эпика 2", TaskStatus.NEW);
-        manager.createEpic(epic2);
-        Subtask subtask3 = new Subtask(null, "Подзадача 1 для эпика 2", "Описание подзадачи 3", TaskStatus.NEW, epic2.getId());
-        manager.createSubtask(subtask3);
+        Epic epic2 = new Epic(null, "Эпик 2", "Эпик без подзадач", TaskStatus.NEW);
+        taskManager.createEpic(epic2);
 
-        Task retrievedTask1 = manager.getTaskById(task1.getId());
+        System.out.println(">>> Запрос задачи 1");
+        taskManager.getTaskById(task1.getId());
+        System.out.println(taskManager.getHistory());
 
-        Epic retrievedEpic1 = manager.getEpicById(epic1.getId());
+        System.out.println(">>> Запрос эпика 1 с подзадачами");
+        taskManager.getEpicById(epic1.getId());
+        System.out.println(taskManager.getHistory());
+
+        System.out.println(">>> Запрос задачи 2 и эпика 2 без подзадач");
+        taskManager.getTaskById(task2.getId());
+        taskManager.getEpicById(epic2.getId());
+        System.out.println(taskManager.getHistory());
+
+        System.out.println(">>> Повторный запрос задачи 1");
+        taskManager.getTaskById(task1.getId());
+        System.out.println(taskManager.getHistory());
+
+        System.out.println(">>> Удаляем задачу 1");
+        taskManager.deleteTaskById(task1.getId());
+        System.out.println(taskManager.getHistory());
+
+        System.out.println(">>> Удаляем эпик с подзадачами");
+        taskManager.deleteEpicById(epic1.getId());
+        System.out.println(taskManager.getHistory());
 
 
-        Subtask retrievedSubtask1 = manager.getSubtaskById(subtask1.getId());
-
-        manager.getTaskById(task2.getId());
-        manager.getTaskById(task1.getId());
-        printAllTasks(manager);
     }
 
-    private static void printAllTasks(InMemoryTaskManager manager) {
-        System.out.println("Задачи:");
-        for (Task task : manager.getAllTasks()) {
-            System.out.println(task);
-        }
-        System.out.println("Эпики:");
-        for (Task epic : manager.getAllEpics()) {
-            System.out.println(epic);
 
-            for (Subtask sub : manager.getSubtasksByEpicId(epic.getId())) {
-                System.out.println("--> " + sub);
-            }
-        }
-        System.out.println("Подзадачи:");
-        for (Task sub : manager.getAllSubtasks()) {
-            System.out.println(sub);
-        }
-
-        System.out.println("История:");
-        for (Task t : manager.getHistory()) {
-            System.out.println(t);
-        }
-    }
 }
