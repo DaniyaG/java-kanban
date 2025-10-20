@@ -178,6 +178,7 @@ class InMemoryTaskManagerTest {
 
         assertNotEquals(0, createdTask.getId());
     }
+
     @Test
     public void testSubtaskDoesNotRetainOldIdAfterDeletion() {
 
@@ -193,6 +194,7 @@ class InMemoryTaskManagerTest {
 
         assertEquals(subtaskId, createdSubtask.getId(), "ID объекта подзадачи не должен изменяться");
     }
+
     @Test
     public void testEpicDoesNotContainDeletedSubtaskIds() {
 

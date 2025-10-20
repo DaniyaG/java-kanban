@@ -34,6 +34,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
         nodeMap.put(task.getId(), newNode);
     }
+
     public List<Task> getTasks() {
         List<Task> tasks = new ArrayList<>();
         Node current = head;
@@ -43,6 +44,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
         return tasks;
     }
+
     public void removeNode(Node node) {
         if (node == null) {
             return;
