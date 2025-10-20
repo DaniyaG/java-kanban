@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class InMemoryTaskManager implements TaskManager{
+public class InMemoryTaskManager implements TaskManager {
 
     private HashMap<Integer, Task> idToTask = new HashMap<>();
     private HashMap<Integer, Epic> idToEpic = new HashMap<>();
     private HashMap<Integer, Subtask> idToSubtask = new HashMap<>();
     private int counter = 1;
-    private final HistoryManager historyManager = Managers.getDefaultHistory();;
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
 
     private int nextId() {
         return counter++;
@@ -83,13 +83,14 @@ public class InMemoryTaskManager implements TaskManager{
     }
 
     @Override
-    public Epic createEpic(Epic newEpic){
+    public Epic createEpic(Epic newEpic) {
         int newId = nextId();
         newEpic.setId(newId);
         newEpic.setStatus(TaskStatus.NEW);
         idToEpic.put(newEpic.getId(),newEpic);
         return newEpic;
     }
+
     @Override
     public void updateEpic(Epic epic) {
         if (idToEpic.containsKey(epic.getId())) {
