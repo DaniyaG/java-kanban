@@ -22,9 +22,9 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node head = null;
     private Node tail = null;
 
-    public void linkLast(Task task){
+    public void linkLast(Task task) {
         Node newNode = new Node(task);
-        if (tail == null){
+        if (tail == null) {
             head = newNode;
             tail = newNode;
         } else {
@@ -73,7 +73,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public void remove(int id){
+    public void remove(int id) {
         Node node = nodeMap.get(id);
         removeNode(node);
     }
