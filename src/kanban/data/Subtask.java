@@ -12,6 +12,7 @@ public class Subtask extends Task {
 
         return epicId;
     }
+
     public boolean updateEpicId(Integer epicId) {
         if (epicId != null && this.id != null && this.id.equals(epicId)) {
             return false;
