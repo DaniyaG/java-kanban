@@ -180,7 +180,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void testSubtaskDoesNotRetainOldIdAfterDeletion() {
+    public void testIdNotRetainedAfterDeletion() {
 
         Subtask subtask = new Subtask(null, "Subtask 1", "Desc", TaskStatus.NEW, 1);
         Subtask createdSubtask = taskManager.createSubtask(subtask);
@@ -196,7 +196,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void testEpicDoesNotContainDeletedSubtaskIds() {
+    public void testEpicWithoutDeletedSubtaskIds() {
 
         Epic epic = new Epic(1, "Epic 1", "Description", TaskStatus.NEW);
         Epic createdEpic = taskManager.createEpic(epic);
