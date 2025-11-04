@@ -140,55 +140,55 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private String toStringTask(Task task) {
-        String typeStr = task.getType().toString();
-        String name = task.getTitle();
-        String status = task.getStatus().toString();
-        String description = task.getDescription();
-        String epicIdStr = "";
+        String taskType = task.getType().toString();
+        String taskTitle = task.getTitle();
+        String taskStatus = task.getStatus().toString();
+        String taskDescription = task.getDescription();
+        String subtaskEpicId = "";
 
         if (task instanceof Subtask) {
-            epicIdStr = String.valueOf(((Subtask) task).getEpicId());
+            subtaskEpicId = String.valueOf(((Subtask) task).getEpicId());
         }
         String idStr = String.valueOf(task.getId());
-        StringBuilder sb = new StringBuilder();
-        sb.append(idStr).append(",")
-                .append(typeStr).append(",")
-                .append(name).append(",")
-                .append(status).append(",")
-                .append(description).append(",")
-                .append(epicIdStr);
-        return sb.toString();
+        StringBuilder builder = new StringBuilder();
+        builder.append(idStr).append(",")
+                .append(taskType).append(",")
+                .append(taskTitle).append(",")
+                .append(taskStatus).append(",")
+                .append(taskDescription).append(",")
+                .append(subtaskEpicId);
+        return builder.toString();
     }
 
     private static Task fromString(String line) {
         String[] parts = line.split(",", -1);
         int id = Integer.parseInt(parts[0]);
-        String typeStr = parts[1];
-        String name = parts[2];
-        String statusStr = parts[3];
-        String description = parts[4];
-        String epicIdStr = parts.length > 5 ? parts[5] : "";
+        String taskType = parts[1];
+        String taskTitle = parts[2];
+        String taskStatus = parts[3];
+        String taskDescription = parts[4];
+        String subtaskEpicId = parts.length > 5 ? parts[5] : "";
 
-        TaskType type = TaskType.valueOf(typeStr);
-        TaskStatus status = TaskStatus.valueOf(statusStr);
+        TaskType type = TaskType.valueOf(taskType);
+        TaskStatus status = TaskStatus.valueOf(taskStatus);
 
         switch (type) {
             case TASK:
-                return new Task(id, name, description, status);
+                return new Task(id, taskTitle, taskDescription, status);
             case EPIC:
-                return new Epic(id, name, description, status);
+                return new Epic(id, taskTitle, taskDescription, status);
             case SUBTASK:
                 int epicId = 0;
-                if (!epicIdStr.isEmpty()) {
+                if (!subtaskEpicId.isEmpty()) {
                     try {
-                        epicId = Integer.parseInt(epicIdStr);
+                        epicId = Integer.parseInt(subtaskEpicId);
                     } catch (NumberFormatException e) {
-                        throw new RuntimeException("Некорректный формат epicId: " + epicIdStr);
+                        throw new RuntimeException("Некорректный формат epicId: " + subtaskEpicId);
                     }
                 }
-                return new Subtask(id, name, description, status, epicId);
+                return new Subtask(id, taskTitle, taskDescription, status, epicId);
             default:
-                throw new RuntimeException("Неизвестный тип задачи: " + typeStr);
+                throw new RuntimeException("Неизвестный тип задачи: " + taskType);
         }
     }
 
