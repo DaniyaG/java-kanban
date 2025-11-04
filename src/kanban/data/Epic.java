@@ -11,7 +11,6 @@ public class Epic extends Task {
     }
 
     public List<Integer> getSubtaskIds() {
-
         return new ArrayList<>(subtaskIds);
     }
 
@@ -19,13 +18,12 @@ public class Epic extends Task {
         if (subtaskId == this.getId()) {
             return false;
         }
-        this.subtaskIds.add(subtaskId);
+        subtaskIds.add(subtaskId);
         return true;
     }
-    public void removeSubtaskId(int subtaskId) {
 
+    public void removeSubtaskId(int subtaskId) {
         subtaskIds.remove(Integer.valueOf(subtaskId));
     }
-
 }
 

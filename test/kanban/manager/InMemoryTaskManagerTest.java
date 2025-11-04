@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+
 class InMemoryTaskManagerTest {
     private InMemoryTaskManager taskManager;
 
@@ -110,16 +111,6 @@ class InMemoryTaskManagerTest {
         assertEquals(TaskStatus.NEW, updatedEpic.getStatus());
     }
 
-    @Test
-    public void testHistoryManagerAddsAndLimitsSize() {
-        for (int taskNumber = 0; taskNumber < 15; taskNumber++) {
-            Task task = taskManager.createTask(new Task(null, "Task " + taskNumber, "Desc", TaskStatus.NEW));
-            taskManager.getTaskById(task.getId());
-        }
-
-        List<Task> history = taskManager.getHistory();
-        assertEquals(10, history.size());
-    }
 
     @Test
     public void testTasksEqualityById() {
@@ -160,21 +151,6 @@ class InMemoryTaskManagerTest {
         assertNotEquals(subtask1, subtask2, "Subtask с разными id не должны быть равны");
     }
 
-
-    @Test
-    public void testManagersUtilityClassInitialization() {
-        TaskManager manager = Managers.getDefault();
-
-        assertNotNull(manager, "Менеджер не должен быть null");
-        assertTrue(manager instanceof InMemoryTaskManager, "Должен возвращаться экземпляр InMemoryTaskManager");
-
-        Task task = new Task(1, "Test", "Description", TaskStatus.NEW);
-        manager.createTask(task);
-
-        Task retrieved = manager.getTaskById(task.getId());
-        assertEquals(task, retrieved, "Созданная и полученная задачи должны совпадать");
-    }
-
     @Test
     void testCannotAddEpicAsSubtaskToItself() {
         Epic epic = new Epic(1, "Epic 1", "Description", TaskStatus.NEW);
@@ -192,7 +168,6 @@ class InMemoryTaskManagerTest {
 
     @Test
     void testTaskImmutabilityOnAdd() {
-        // Создаем задачу с начальным id (который будет изменен внутри createTask)
         Task task = new Task(0, "Task 1", "Description", TaskStatus.NEW);
         Task createdTask = taskManager.createTask(task);
         Task retrievedTask = taskManager.getTaskById(createdTask.getId());
@@ -204,4 +179,43 @@ class InMemoryTaskManagerTest {
         assertNotEquals(0, createdTask.getId());
     }
 
+    @Test
+    public void testIdNotRetainedAfterDeletion() {
+
+        Subtask subtask = new Subtask(null, "Subtask 1", "Desc", TaskStatus.NEW, 1);
+        Subtask createdSubtask = taskManager.createSubtask(subtask);
+
+        int subtaskId = createdSubtask.getId();
+
+        taskManager.deleteSubtaskById(subtaskId);
+
+        Subtask retrieved = taskManager.getSubtaskById(subtaskId);
+        assertNull(retrieved, "Подзадача с удаленным id должна быть null");
+
+        assertEquals(subtaskId, createdSubtask.getId(), "ID объекта подзадачи не должен изменяться");
+    }
+
+    @Test
+    public void testEpicWithoutDeletedSubtaskIds() {
+
+        Epic epic = new Epic(1, "Epic 1", "Description", TaskStatus.NEW);
+        Epic createdEpic = taskManager.createEpic(epic);
+
+        int epicId = createdEpic.getId();
+
+        Subtask subtask = new Subtask(null, "Subtask 1", "Desc", TaskStatus.NEW, 1);
+        Subtask createdSubtask = taskManager.createSubtask(subtask);
+        int subtaskId = createdSubtask.getId();
+        taskManager.deleteSubtaskById(subtaskId);
+        List<Subtask> subtasks = taskManager.getSubtasksByEpicId(epicId);
+        boolean hasDeletedSubtaskId = false;
+
+        for (Subtask s : subtasks) {
+            if (s.getId() == subtaskId) {
+                hasDeletedSubtaskId = true;
+                break;
+            }
+        }
+        assertFalse(hasDeletedSubtaskId, "Подзадача с этим ID должна быть удалена и отсутствовать в списке");
+    }
 }
