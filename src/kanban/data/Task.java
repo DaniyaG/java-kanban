@@ -7,12 +7,22 @@ public class Task {
     protected String title;
     protected String description;
     protected TaskStatus status;
+    protected TaskType type;
 
     public Task(Integer id, String title, String description, TaskStatus status) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.status = status;
+        this.type = TaskType.TASK;
+    }
+
+    public TaskType getType() {
+        return type;
+    }
+
+    public void setType(TaskType type) {
+        this.type = type;
     }
 
     public Integer getId() {
