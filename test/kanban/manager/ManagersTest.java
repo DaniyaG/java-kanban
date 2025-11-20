@@ -4,6 +4,9 @@ import kanban.data.Task;
 import kanban.data.TaskStatus;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ManagersTest {
@@ -15,7 +18,7 @@ class ManagersTest {
         assertNotNull(manager, "Менеджер не должен быть null");
         assertTrue(manager instanceof InMemoryTaskManager, "Должен возвращаться экземпляр InMemoryTaskManager");
 
-        Task task = new Task(1, "Test", "Description", TaskStatus.NEW);
+        Task task = new Task(1, "Test", "Description", TaskStatus.NEW, Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0));
         manager.createTask(task);
 
         Task retrieved = manager.getTaskById(task.getId());

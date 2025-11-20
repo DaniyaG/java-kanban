@@ -2,14 +2,20 @@ import kanban.data.Epic;
 import kanban.data.Subtask;
 import kanban.data.Task;
 import kanban.data.TaskStatus;
+import kanban.manager.InMemoryTaskManager;
 import kanban.manager.Managers;
 import kanban.manager.TaskManager;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) {
-        TaskManager taskManager = Managers.getDefault();
 
-        Task task1 = new Task(null, "Задача 1", "Описание задачи 1", TaskStatus.NEW);
+        //TaskManager taskManager = Managers.getDefault();
+
+       /* Task task1 = new Task(null, "Задача 1", "Описание задачи 1", TaskStatus.NEW);
         Task task2 = new Task(null, "Задача 2", "Описание задачи 2", TaskStatus.NEW);
         taskManager.createTask(task1);
         taskManager.createTask(task2);
@@ -49,7 +55,7 @@ public class Main {
 
         System.out.println(">>> Удаляем эпик с подзадачами");
         taskManager.deleteEpicById(epic1.getId());
-        System.out.println(taskManager.getHistory());
+        System.out.println(taskManager.getHistory());*/
 
 
     }

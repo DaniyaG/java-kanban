@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,9 +49,9 @@ class FileBackedTaskManagerTest {
     @Test
     void testSaveMultipleTasks() {
         FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
-        Task task = new Task(0, "Task1", "Description1", TaskStatus.NEW);
+        Task task = new Task(0, "Task1", "Description1", TaskStatus.NEW, Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0));
         Epic epic = new Epic(0, "Epic1", "Epic Description", TaskStatus.NEW);
-        Subtask subtask = new Subtask(0, "Subtask1", "Subdesc", TaskStatus.NEW, 1);
+        Subtask subtask = new Subtask(0, "Subtask1", "Subdesc", TaskStatus.NEW, 1, Duration.ofMinutes(20), LocalDateTime.of(2001, 1, 1, 11, 0));
 
         manager.createTask(task);
         manager.createEpic(epic);
@@ -64,8 +66,8 @@ class FileBackedTaskManagerTest {
     void testLoadMultipleTasks() {
         FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
 
-        Task task1 = new Task(0, "Задача 1", "Описание 1", TaskStatus.NEW);
-        Task task2 = new Task(0, "Задача 2", "Описание 2", TaskStatus.IN_PROGRESS);
+        Task task1 = new Task(0, "Задача 1", "Описание 1", TaskStatus.NEW, Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0));
+        Task task2 = new Task(0, "Задача 2", "Описание 2", TaskStatus.IN_PROGRESS, Duration.ofMinutes(20), LocalDateTime.of(2001, 1, 1, 11, 0));
 
         task1 = manager.createTask(task1);
         task2 = manager.createTask(task2);
