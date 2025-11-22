@@ -9,6 +9,8 @@ import kanban.data.TaskStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -22,7 +24,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void testCreateAndGetTask() {
-        Task task = new Task(1, "Test task", "Description", TaskStatus.NEW);
+        Task task = new Task(1, "Test task", "Description", TaskStatus.NEW, Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0));
         Task created = taskManager.createTask(task);
 
         assertNotNull(created.getId());
@@ -47,7 +49,7 @@ class InMemoryTaskManagerTest {
     @Test
     public void testCreateSubtaskAndLinkToEpic() {
         Epic epic = taskManager.createEpic(new Epic(null, "Epic1", "Description", TaskStatus.NEW));
-        Subtask subtask = taskManager.createSubtask(new Subtask(null, "Subtask1", "SubDesc", TaskStatus.NEW, epic.getId()));
+        Subtask subtask = taskManager.createSubtask(new Subtask(null, "Subtask1", "SubDesc", TaskStatus.NEW, epic.getId(), Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0)));
 
         assertEquals(epic.getId(), subtask.getEpicId());
         Epic updatedEpic = taskManager.getEpicById(epic.getId());
@@ -56,7 +58,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void testUpdateTask() {
-        Task task = taskManager.createTask(new Task(null, "Task1", "Desc1", TaskStatus.NEW));
+        Task task = taskManager.createTask(new Task(null, "Task1", "Desc1", TaskStatus.NEW, Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0)));
         task.setTitle("Updated title");
         task.setStatus(TaskStatus.DONE);
 
@@ -70,8 +72,8 @@ class InMemoryTaskManagerTest {
     @Test
     public void testEpicStatusUpdateBySubtasks() {
         Epic epic = taskManager.createEpic(new Epic(null, "Epic", "Desc", TaskStatus.NEW));
-        Subtask st1 = taskManager.createSubtask(new Subtask(null, "Sub1", "Desc", TaskStatus.NEW, epic.getId()));
-        Subtask st2 = taskManager.createSubtask(new Subtask(null, "Sub2", "Desc", TaskStatus.NEW, epic.getId()));
+        Subtask st1 = taskManager.createSubtask(new Subtask(null, "Sub1", "Desc", TaskStatus.NEW, epic.getId(), Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0)));
+        Subtask st2 = taskManager.createSubtask(new Subtask(null, "Sub2", "Desc", TaskStatus.NEW, epic.getId(), Duration.ofMinutes(20), LocalDateTime.of(2005, 1, 1, 11, 0)));
 
         assertEquals(TaskStatus.NEW, taskManager.getEpicById(epic.getId()).getStatus());
 
@@ -88,7 +90,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void testDeleteTask() {
-        Task task = taskManager.createTask(new Task(null, "Task", "Desc", TaskStatus.NEW));
+        Task task = taskManager.createTask(new Task(null, "Task", "Desc", TaskStatus.NEW, Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0)));
         int id = task.getId();
 
         taskManager.deleteTaskById(id);
@@ -100,7 +102,7 @@ class InMemoryTaskManagerTest {
     @Test
     public void testDeleteSubtaskAndUpdateEpic() {
         Epic epic = taskManager.createEpic(new Epic(null, "Epic", "Desc", TaskStatus.NEW));
-        Subtask subtask = taskManager.createSubtask(new Subtask(null, "Sub", "Desc", TaskStatus.NEW, epic.getId()));
+        Subtask subtask = taskManager.createSubtask(new Subtask(null, "Sub", "Desc", TaskStatus.NEW, epic.getId(), Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0)));
         int subtaskId = subtask.getId();
 
         taskManager.deleteSubtaskById(subtaskId);
@@ -114,9 +116,9 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void testTasksEqualityById() {
-        Task task1 = new Task(null, "Test task 1", "Description 1", TaskStatus.NEW);
+        Task task1 = new Task(null, "Test task 1", "Description 1", TaskStatus.NEW, Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0));
         task1.setId(100);
-        Task task2 = new Task(null, "Different title", "Different description", TaskStatus.NEW);
+        Task task2 = new Task(null, "Different title", "Different description", TaskStatus.NEW, Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0));
         task2.setId(100);
 
         assertEquals(task1, task2, "Задачи с одинаковым id должны считаться равными");
@@ -140,9 +142,9 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void testSubtaskEqualityById() {
-        Subtask subtask1 = new Subtask(null, "Subtask 1", "Desc", TaskStatus.NEW, 1);
+        Subtask subtask1 = new Subtask(null, "Subtask 1", "Desc", TaskStatus.NEW, 1, Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0));
         subtask1.setId(20);
-        Subtask subtask2 = new Subtask(null, "Other subtask", "Another Desc", TaskStatus.DONE, 1);
+        Subtask subtask2 = new Subtask(null, "Other subtask", "Another Desc", TaskStatus.DONE, 1, Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0));
         subtask2.setId(20);
 
         assertEquals(subtask1, subtask2, "Subtask с одинаковым id должны быть равны");
@@ -161,14 +163,14 @@ class InMemoryTaskManagerTest {
     @Test
     void testCannotSetSubtaskEpicToItself() {
         Epic epic = new Epic(1, "Epic 1", "Description", TaskStatus.NEW);
-        Subtask subtask = new Subtask(2, "Subtask 1", "Description", TaskStatus.NEW, epic.getId());
+        Subtask subtask = new Subtask(2, "Subtask 1", "Description", TaskStatus.NEW, epic.getId(), Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0));
         boolean result = subtask.updateEpicId(subtask.getId());
         assertFalse(result, "Subtask не должен ссылаться сам на себя как на эпик");
     }
 
     @Test
     void testTaskImmutabilityOnAdd() {
-        Task task = new Task(0, "Task 1", "Description", TaskStatus.NEW);
+        Task task = new Task(0, "Task 1", "Description", TaskStatus.NEW, Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0));
         Task createdTask = taskManager.createTask(task);
         Task retrievedTask = taskManager.getTaskById(createdTask.getId());
         assertEquals(createdTask.getId(), retrievedTask.getId());
@@ -182,7 +184,7 @@ class InMemoryTaskManagerTest {
     @Test
     public void testIdNotRetainedAfterDeletion() {
 
-        Subtask subtask = new Subtask(null, "Subtask 1", "Desc", TaskStatus.NEW, 1);
+        Subtask subtask = new Subtask(null, "Subtask 1", "Desc", TaskStatus.NEW, 1, Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0));
         Subtask createdSubtask = taskManager.createSubtask(subtask);
 
         int subtaskId = createdSubtask.getId();
@@ -203,7 +205,7 @@ class InMemoryTaskManagerTest {
 
         int epicId = createdEpic.getId();
 
-        Subtask subtask = new Subtask(null, "Subtask 1", "Desc", TaskStatus.NEW, 1);
+        Subtask subtask = new Subtask(null, "Subtask 1", "Desc", TaskStatus.NEW, 1, Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0));
         Subtask createdSubtask = taskManager.createSubtask(subtask);
         int subtaskId = createdSubtask.getId();
         taskManager.deleteSubtaskById(subtaskId);
@@ -217,5 +219,27 @@ class InMemoryTaskManagerTest {
             }
         }
         assertFalse(hasDeletedSubtaskId, "Подзадача с этим ID должна быть удалена и отсутствовать в списке");
+    }
+
+    @Test
+    public void testOverlapDetection() {
+        Task task1 = new Task(0, "Task 1", "Description", TaskStatus.NEW, Duration.ofHours(2), LocalDateTime.of(2023, 10, 10, 10, 0));
+        task1.getEndTime();
+
+        taskManager.createTask(task1);
+
+        Task overlappingTask = new Task(0, "Task 2", "Description", TaskStatus.NEW, Duration.ofHours(1), LocalDateTime.of(2023, 10, 10, 11, 0));
+        overlappingTask.getEndTime();
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            taskManager.createTask(overlappingTask);
+        });
+
+        Task nonOverlappingTask = new Task(0, "Task 2", "Description", TaskStatus.NEW, Duration.ofHours(1), LocalDateTime.of(2023, 10, 10, 13, 0));
+        nonOverlappingTask.getEndTime();
+
+        assertDoesNotThrow(() -> {
+            taskManager.createTask(nonOverlappingTask);
+        });
     }
 }

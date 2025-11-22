@@ -4,6 +4,9 @@ import kanban.data.*;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
@@ -14,7 +17,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.write("id,type,name,status,description,epic");
+            writer.write("id,type,name,status,description,epic,duration,startTime,endTime");
             writer.newLine();
 
             for (Task task : getAllTasks()) {
@@ -145,6 +148,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String taskStatus = task.getStatus().toString();
         String taskDescription = task.getDescription();
         String subtaskEpicId = "";
+        String taskDuration = "";
+        String taskStartTime = "";
+        String taskEndTime = "";
+
+        if (task.getDuration() != null) {
+            taskDuration = String.valueOf(task.getDuration().toMinutes());
+        }
+        if (task.getStartTime() != null) {
+            taskStartTime = task.getStartTime().toString();
+        }
+        if (task.getEndTime() != null) {
+            taskEndTime = task.getEndTime().toString();
+        }
 
         if (task instanceof Subtask) {
             subtaskEpicId = String.valueOf(((Subtask) task).getEpicId());
@@ -156,7 +172,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 .append(taskTitle).append(",")
                 .append(taskStatus).append(",")
                 .append(taskDescription).append(",")
-                .append(subtaskEpicId);
+                .append(subtaskEpicId).append(",")
+                .append(taskDuration).append(",")
+                .append(taskStartTime).append(",")
+                .append(taskEndTime);
         return builder.toString();
     }
 
@@ -168,13 +187,44 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String taskStatus = parts[3];
         String taskDescription = parts[4];
         String subtaskEpicId = parts.length > 5 ? parts[5] : "";
+        String taskDuration = parts.length > 6 ? parts[6] : "";
+        String taskStartTime = parts.length > 7 ? parts[7] : "";
+        String taskEndTime = parts.length > 8 ? parts[8] : "";
 
         TaskType type = TaskType.valueOf(taskType);
         TaskStatus status = TaskStatus.valueOf(taskStatus);
 
+        Duration duration = null;
+        if (!taskDuration.isEmpty()) {
+            try {
+                long minutes = Long.parseLong(taskDuration);
+                duration = Duration.ofMinutes(minutes);
+            } catch (NumberFormatException e) {
+                throw new RuntimeException("Некорректный формат duration: " + taskDuration);
+            }
+        }
+
+        LocalDateTime startTime = null;
+        if (!taskStartTime.isEmpty()) {
+            try {
+                startTime = LocalDateTime.parse(taskStartTime);
+            } catch (DateTimeParseException e) {
+                throw new RuntimeException("Некорректный формат startTime: " + taskStartTime);
+            }
+        }
+
+        LocalDateTime endTime = null;
+        if (!taskEndTime.isEmpty()) {
+            try {
+                endTime = LocalDateTime.parse(taskEndTime);
+            } catch (DateTimeParseException e) {
+                throw new RuntimeException("Некорректный формат endTime: " + taskEndTime);
+            }
+        }
+
         switch (type) {
             case TASK:
-                return new Task(id, taskTitle, taskDescription, status);
+                return new Task(id, taskTitle, taskDescription, status, duration, startTime);
             case EPIC:
                 return new Epic(id, taskTitle, taskDescription, status);
             case SUBTASK:
@@ -186,7 +236,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         throw new RuntimeException("Некорректный формат epicId: " + subtaskEpicId);
                     }
                 }
-                return new Subtask(id, taskTitle, taskDescription, status, epicId);
+                return new Subtask(id, taskTitle, taskDescription, status, epicId, duration, startTime);
             default:
                 throw new RuntimeException("Неизвестный тип задачи: " + taskType);
         }
@@ -208,8 +258,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
 
-        Task task1 = new Task(0, "Задача 1", "Описание задачи 1", TaskStatus.NEW);
-        Task task2 = new Task(0, "Задача 2", "Описание задачи 2", TaskStatus.NEW);
+        Task task1 = new Task(0, "Задача 1", "Описание задачи 1", TaskStatus.NEW, Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 11, 0));
+        Task task2 = new Task(0, "Задача 2", "Описание задачи 2", TaskStatus.NEW,Duration.ofMinutes(45), LocalDateTime.of(2000, 2, 1, 12, 0));
 
         Epic epic1 = new Epic(0, "Эпик 1", "Описание эпика 1", TaskStatus.NEW);
         Epic epic2 = new Epic(0, "Эпик 2", "Описание эпика 2", TaskStatus.NEW);
@@ -217,18 +267,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         task1 = manager.createTask(task1);
         task2 = manager.createTask(task2);
 
-        epic1 = manager.createEpic(epic1);
-        epic2 = manager.createEpic(epic2);
+       epic1 = manager.createEpic(epic1);
+       epic2 = manager.createEpic(epic2);
 
-        Subtask subtask1 = new Subtask(0, "Подзадача 1", "Описание подзадачи 1", TaskStatus.NEW, epic1.getId());
-        Subtask subtask2 = new Subtask(0, "Подзадача 2", "Описание подзадачи 2", TaskStatus.NEW, epic1.getId());
+        Subtask subtask1 = new Subtask(0, "Подзадача 1", "Описание подзадачи 1", TaskStatus.NEW, epic1.getId(),Duration.ofMinutes(26), LocalDateTime.of(2000, 1, 2, 10, 0));
+        Subtask subtask2 = new Subtask(0, "Подзадача 2", "Описание подзадачи 2", TaskStatus.NEW, epic1.getId(),Duration.ofMinutes(28), LocalDateTime.of(2000, 1, 1, 13, 0));
 
         subtask1 = manager.createSubtask(subtask1);
         subtask2 = manager.createSubtask(subtask2);
 
         manager.save();
 
-        FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
+       FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
 
         System.out.println("Все задачи в загруженном менеджере:");
         for (Task t : loadedManager.getAllTasks()) {
