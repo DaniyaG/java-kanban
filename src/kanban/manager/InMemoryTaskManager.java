@@ -1,5 +1,6 @@
 package kanban.manager;
 
+import exceptions.NotFoundException;
 import kanban.data.Epic;
 import kanban.data.Subtask;
 import kanban.data.Task;
@@ -50,9 +51,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int id) {
         Task task = idToTask.get(id);
-        if (task != null) {
-            historyManager.add(task);
+        if (task == null) {
+            throw new NotFoundException("Задача с id " + id + " не найдена");
         }
+        historyManager.add(task);
         return task;
     }
 
@@ -109,9 +111,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpicById(int id) {
         Epic epic = idToEpic.get(id);
-        if (epic != null) {
-            historyManager.add(epic);
+        if (epic == null) {
+            throw new NotFoundException("Эпик с id " + id + " не найден");
         }
+        historyManager.add(epic);
         return epic;
     }
 
@@ -228,9 +231,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtaskById(int id) {
         Subtask subtask = idToSubtask.get(id);
-        if (subtask != null) {
-            historyManager.add(subtask);
+        if (subtask == null) {
+            throw new NotFoundException("Подзадача с id " + id + " не найдена");
         }
+        historyManager.add(subtask);
         return subtask;
     }
 
