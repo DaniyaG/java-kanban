@@ -49,6 +49,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             sendInternalServerError(exchange,e);
         }
     }
+
     private void handleGetTasks(HttpExchange exchange, String path) throws IOException {
         if (path.equals("/tasks")) {
             List<Task> tasks = taskManager.getAllTasks();
@@ -94,6 +95,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             sendText(exchange, "Invalid task data", 400);
         }
     }
+
     private void handleDeleteTasks(HttpExchange exchange, String path) throws IOException {
         try {
             int id = extractIdFromPath(path);

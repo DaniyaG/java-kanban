@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
-
     private final TaskManager taskManager;
     private final Gson gson;
 
