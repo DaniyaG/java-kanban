@@ -60,8 +60,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                 String response = gson.toJson(epics);
                 sendText(exchange, response);
             }
-        }
-        else if (path.matches("/epics/\\d+/subtasks")) {
+        } else if (path.matches("/epics/\\d+/subtasks")) {
             try {
                 int epicId = extractIdFromPath(path, "/epics/(\\d+)/subtasks");
                 List<Subtask> subtasks = taskManager.getSubtasksByEpicId(epicId);
@@ -103,13 +102,9 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
             if (epic.getId() == null) {
                 taskManager.createEpic(epic);
             } else {
-
                 taskManager.updateEpic(epic);
-
             }
             sendText(exchange, "Epic created/updated", 201);
-
-
         } else {
             sendText(exchange, "Invalid epic data", 400);
         }
@@ -117,10 +112,9 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 
     private void handleDeleteEpics(HttpExchange exchange, String path) throws IOException {
         try {
-            int id = extractIdFromPath(path, "/epics/(\\d+)"); // /epics/{id}
+            int id = extractIdFromPath(path, "/epics/(\\d+)");
             taskManager.deleteEpicById(id);
             sendText(exchange, "Epic deleted", 200);
-
         } catch (NumberFormatException e) {
             sendNotFound(exchange);
         }
