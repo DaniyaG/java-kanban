@@ -2,6 +2,7 @@ package kanban.manager;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import exceptions.NotFoundException;
 import kanban.data.Epic;
 import kanban.data.Subtask;
 import kanban.data.Task;
@@ -95,7 +96,10 @@ class InMemoryTaskManagerTest {
 
         taskManager.deleteTaskById(id);
 
-        assertNull(taskManager.getTaskById(id));
+        assertThrows(NotFoundException.class, () -> {
+            taskManager.getTaskById(id);
+        });
+
         assertFalse(taskManager.getAllTasks().contains(task));
     }
 
@@ -107,7 +111,10 @@ class InMemoryTaskManagerTest {
 
         taskManager.deleteSubtaskById(subtaskId);
 
-        assertNull(taskManager.getSubtaskById(subtaskId));
+        assertThrows(NotFoundException.class, () -> {
+            taskManager.getSubtaskById(subtaskId);
+        });
+
         Epic updatedEpic = taskManager.getEpicById(epic.getId());
         assertFalse(updatedEpic.getSubtaskIds().contains(subtaskId));
         assertEquals(TaskStatus.NEW, updatedEpic.getStatus());
@@ -191,8 +198,9 @@ class InMemoryTaskManagerTest {
 
         taskManager.deleteSubtaskById(subtaskId);
 
-        Subtask retrieved = taskManager.getSubtaskById(subtaskId);
-        assertNull(retrieved, "Подзадача с удаленным id должна быть null");
+        assertThrows(NotFoundException.class, () -> {
+            taskManager.getSubtaskById(subtaskId);
+        });
 
         assertEquals(subtaskId, createdSubtask.getId(), "ID объекта подзадачи не должен изменяться");
     }
