@@ -52,7 +52,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Task getTaskById(int id) {
         Task task = idToTask.get(id);
         if (task == null) {
-            throw new NotFoundException("Задача с id " + id + " не найдена");
+            throw new NotFoundException(String.format("Подзадача с id %d не найдена", id));
         }
         historyManager.add(task);
         return task;
@@ -112,7 +112,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Epic getEpicById(int id) {
         Epic epic = idToEpic.get(id);
         if (epic == null) {
-            throw new NotFoundException("Эпик с id " + id + " не найден");
+            throw new NotFoundException(String.format("Эпик с id %d не найден", id));
         }
         historyManager.add(epic);
         return epic;
@@ -232,7 +232,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Subtask getSubtaskById(int id) {
         Subtask subtask = idToSubtask.get(id);
         if (subtask == null) {
-            throw new NotFoundException("Подзадача с id " + id + " не найдена");
+            throw new NotFoundException(String.format("Подзадача с id %d не найдена", id));
         }
         historyManager.add(subtask);
         return subtask;
